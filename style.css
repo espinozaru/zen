@@ -133,12 +133,15 @@ section { min-height: 100vh; display: flex; flex-direction: column; justify-cont
 
 /* ---------- menú móvil: botón + lista a pantalla completa con cristal ---------- */
 .top-right { display: flex; align-items: center; gap: 10px; }
-.m-btn { display: none; width: 42px; height: 42px; border-radius: 50%; background: rgba(8, 12, 22, .38); border: 1px solid rgba(255, 255, 255, .2);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); flex-direction: column; justify-content: center; align-items: center; gap: 6px; position: relative; z-index: 31; }
+.m-btn { display: none; position: fixed; right: 16px; bottom: calc(24px + env(safe-area-inset-bottom)); width: 50px; height: 50px; border-radius: 50%; background: rgba(8, 12, 22, .5); border: 1px solid rgba(255, 255, 255, .2);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); flex-direction: column; justify-content: center; align-items: center; gap: 6px; z-index: 31;
+  transition: bottom .9s cubic-bezier(.2, .9, .2, 1); }
+/* con el reproductor abierto, el botón sube y queda encima de él */
+body:has(.player.show) .m-btn { bottom: calc(112px + env(safe-area-inset-bottom)); }
 .m-btn span { display: block; width: 16px; height: 1px; background: #fff; transition: transform .6s var(--ease); }
 .m-open .m-btn span:first-child { transform: translateY(3.5px) rotate(45deg); }
 .m-open .m-btn span:last-child { transform: translateY(-3.5px) rotate(-45deg); }
-.m-menu { position: fixed; inset: 0; z-index: 30; display: flex; flex-direction: column; justify-content: center; padding: 90px 28px calc(30px + env(safe-area-inset-bottom));
+.m-menu { position: fixed; inset: 0; z-index: 30; display: flex; flex-direction: column; justify-content: center; padding: 80px 28px calc(100px + env(safe-area-inset-bottom));
   background: rgba(5, 8, 15, .55); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); opacity: 0; pointer-events: none; transition: opacity .7s var(--ease); }
 .m-open .m-menu { opacity: 1; pointer-events: auto; }
 .m-menu a { display: flex; align-items: baseline; gap: 16px; padding: 9px 0; color: var(--text); text-decoration: none; border-bottom: 1px solid rgba(255, 255, 255, .07);
@@ -164,6 +167,10 @@ section { min-height: 100vh; display: flex; flex-direction: column; justify-cont
 .p-cover { position: relative; width: 52px; height: 52px; border-radius: 50%; background-size: cover; background-position: center; flex: none; }
 .p-ring { position: absolute; inset: -5px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .45); border-right-color: transparent; border-bottom-color: transparent; opacity: 0; transition: opacity .8s; }
 .playing .p-ring { opacity: 1; animation: spin 7s linear infinite; }
+/* barras «suena» dentro del círculo de la portada, sobre un velo oscuro */
+.p-cover::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: rgba(5, 8, 15, .45); opacity: 0; transition: opacity .6s; }
+.p-eq { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1; opacity: 0; transition: opacity .6s; }
+.playing .p-cover::after, .playing .p-eq { opacity: 1; }
 .loading .p-ring { opacity: 1; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -204,7 +211,7 @@ section { min-height: 100vh; display: flex; flex-direction: column; justify-cont
   .top { padding: 14px 16px; }
   .logo { width: 104px; }
   .top-cta { font-size: 13px; padding: 9px 15px; gap: 8px; }
-  section { padding: 84px 20px 132px; }
+  section { padding: 84px 20px 160px; }
   .stair { width: 88vw; }
   .stair .w1 { font-size: 12.5vw; }
   .stair .w2 { font-size: 19vw; }
@@ -215,13 +222,13 @@ section { min-height: 100vh; display: flex; flex-direction: column; justify-cont
   .track h2 { font-size: 40px; max-width: 12ch; }
   .track .phrase { font-size: 16px; }
   .track .play { padding: 14px 26px; }
-  .player { border-radius: 24px; gap: 10px; padding: 8px 10px 8px 8px; bottom: calc(10px + env(safe-area-inset-bottom)); width: calc(100vw - 20px); }
+  .player { border-radius: 24px; gap: 10px; padding: 8px 10px 8px 8px; bottom: calc(24px + env(safe-area-inset-bottom)); width: calc(100vw - 24px); }
   .p-vol, .p-close { display: none; }
   .p-cover { width: 42px; height: 42px; }
   .p-title { font-size: 13px; }
   .p-ctrl #pPrev { display: none; }
   .p-ctrl .p-play { width: 46px; height: 46px; }
-  .made { right: 16px; bottom: calc(14px + env(safe-area-inset-bottom)); font-size: 11px; }
+  .made { right: auto; left: 18px; bottom: calc(38px + env(safe-area-inset-bottom)); font-size: 11px; }
   body:has(.player.show) .made { opacity: 0; pointer-events: none; } /* en el teléfono el reproductor ocupa el ancho */
 }
 @media (hover: none) { .p-vol { display: none; } }
