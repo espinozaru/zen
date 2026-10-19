@@ -31,10 +31,10 @@
 
   /* plegar / desplegar: pestaña pegada al borde izquierdo del panel, a media altura (como un cajón) */
   .v2 .ph-toggle { position: absolute; left: -26px; top: 50%; translate: 0 -50%; z-index: 2; width: 26px; height: 72px; display: grid; place-items: center;
-    border-radius: 14px 0 0 14px; background: rgba(8, 12, 22, .5); border: 1px solid rgba(255, 255, 255, .12); border-right: none;
-    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); opacity: .8; transition: opacity .3s, background .3s; }
-  .v2 .ph-toggle:hover { opacity: 1; background: rgba(8, 12, 22, .75); }
-  .v2 .ph-toggle svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform .5s; transform: rotate(-90deg); }
+    border-radius: 14px 0 0 14px; background: rgba(255, 255, 255, .7); border: none; box-shadow: -4px 0 18px rgba(0, 0, 0, .25);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: background .3s; } /* blanca al 70 %: se nota sobre cualquier fondo */
+  .v2 .ph-toggle:hover { background: rgba(255, 255, 255, .92); }
+  .v2 .ph-toggle svg { width: 16px; height: 16px; fill: none; stroke: #4a5a70; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; transition: transform .5s; transform: rotate(-90deg); }
 
   /* al plegar/desplegar: el contenido se funde, el panel cambia de ancho y el contenido vuelve */
   .v2 .player.phone > :not(.ph-toggle) { transition: opacity .2s; }
@@ -135,3 +135,13 @@
 }
 @media (prefers-reduced-motion: reduce) { .note { display: none; } .v2 .track .play[data-n]:hover { scale: 1; } }
 
+
+/* barra de avance como un cometa: recorrido tenue, estela que se enciende hacia la punta y cabeza luminosa que respira al sonar */
+.v2 .p-fill { background: rgba(255, 255, 255, .32); overflow: visible; }
+.v2 .p-fill::before { content: ''; position: absolute; right: 0; top: 50%; translate: 0 -50%; width: min(100%, 90px); height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(230, 238, 250, .9)); box-shadow: 0 0 8px rgba(210, 225, 245, .45); }
+.v2 .p-fill::after { content: ''; position: absolute; right: -3px; top: 50%; translate: 0 -50%; width: 6px; height: 6px; border-radius: 50%; background: #fff;
+  box-shadow: 0 0 6px 2px rgba(255, 255, 255, .85), 0 0 18px 5px rgba(200, 215, 240, .45); opacity: 0; transition: opacity .8s; }
+.v2 .playing .p-fill::after { opacity: 1; animation: comet 2.6s ease-in-out infinite; }
+@keyframes comet { 50% { box-shadow: 0 0 8px 3px rgba(255, 255, 255, .95), 0 0 26px 8px rgba(200, 215, 240, .6); } }
+@media (prefers-reduced-motion: reduce) { .v2 .playing .p-fill::after { animation: none; } }

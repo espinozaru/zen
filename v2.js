@@ -19,7 +19,12 @@
   });
 
   // en escritorio el panel está siempre visible, con la primera pista preparada (sin sonar)
-  if (wide.matches) { setTrack(0); player.classList.add('show'); }
+  // la primera pista queda preparada (sin sonar); en escritorio el panel está siempre visible
+  if (idx < 0) setTrack(0);
+  const showWide = () => { if (wide.matches) player.classList.add('show'); };
+  showWide();
+  wide.addEventListener('change', showWide);
+
 
   // plegar / desplegar (se recuerda). Plegado: franja estrecha; clic en ella (fuera de los botones) la abre.
   // Secuencia suave: se funde el contenido, cambia el ancho del panel, vuelve el contenido
