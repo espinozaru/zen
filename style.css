@@ -65,8 +65,9 @@ section { min-height: 100vh; display: flex; flex-direction: column; justify-cont
 .fx:not([data-split]), .fx .wd { opacity: 0; will-change: transform, opacity, filter; }
 .fx .wd { display: inline-block; }
 
-.manifest .line { font-size: clamp(20px, 2.4vw, 34px); font-weight: 300; letter-spacing: .01em; margin: 16px 0; }
-.manifest .line.big { font-size: clamp(34px, 5vw, 72px); font-weight: 500; margin-top: 26px; }
+.manifest .line { font-size: clamp(20px, 2.4vw, 34px); font-weight: 300; letter-spacing: .01em; line-height: 1.35; margin: 0; }
+.manifest .line.tight { margin-top: 0; } /* las dos primeras líneas forman un solo bloque */
+.manifest .line.big { font-size: clamp(34px, 5vw, 72px); font-weight: 500; margin-top: 40px; }
 
 /* ---------- cada pista ---------- */
 .track { min-height: 108vh; }
@@ -193,6 +194,10 @@ body:has(.player.show) .m-btn { bottom: calc(112px + env(safe-area-inset-bottom)
 .p-ctrl .p-play:hover { background: #ffffff18; }
 .p-play .i-pause, .playing .p-play .i-play { display: none; }
 .playing .p-play .i-pause { display: block; }
+.playing .p-play { animation: pulse 2.4s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(230, 236, 245, .35); } 50% { box-shadow: 0 0 0 7px rgba(230, 236, 245, 0); } }
+.p-top .eq { flex: none; }
+.p-top .eq i { width: 3px; background: #fff; }
 .p-vol { width: 70px; accent-color: #e6eaee; opacity: .6; }
 .p-cta { display: none; color: var(--text); text-decoration: none; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; border: 1px solid #ffffff60; padding: 10px 16px; border-radius: 30px; white-space: nowrap; }
 .end .p-cta { display: inline-block; }
@@ -212,8 +217,9 @@ body:has(.player.show) .m-btn { bottom: calc(112px + env(safe-area-inset-bottom)
   .stair .w1 { font-size: 12.5vw; }
   .stair .w2 { font-size: 19vw; }
   .sub { margin-top: 30px; letter-spacing: .22em; }
-  .manifest .line { font-size: 19px; margin: 12px 0; }
-  .manifest .line.big { font-size: 36px; }
+  .manifest .line { font-size: 19px; margin: 0; }
+  .manifest .line.tight { margin-top: 0; } /* las dos primeras líneas forman un solo bloque */
+.manifest .line.big { font-size: 36px; }
   .track { min-height: 100svh; }
   .track h2 { font-size: 40px; max-width: 12ch; }
   .track .phrase { font-size: 16px; }
