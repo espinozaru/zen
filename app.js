@@ -162,7 +162,7 @@ const texFrom = (img) => {
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
   return t;
 };
-const getScene = (id) => (cache[id] ??= Promise.all([loadImg(`assets/${id}.webp`), loadImg(`assets/depth/${id}.jpg`)])
+const getScene = (id) => (cache[id] ??= Promise.all([loadImg(`assets/${id}.webp`), loadImg(`assets/depth/${id}.webp`)])
   .then(([img, dep]) => ({img: texFrom(img), dep: texFrom(dep), aspect: img.width / img.height})));
 
 let A = null, B = null, horA = 0.67, horB = 0.67, mixB = 0, mixTarget = 0, currentBg = 'song1';
