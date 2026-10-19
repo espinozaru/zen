@@ -1,4 +1,8 @@
 /* v2 · el player es una barra lateral a la derecha, de arriba abajo (estilo Yandex Музыка, mejorado); el contenido se corre a la izquierda */
+@property --ring-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes ring-turn { to { --ring-a: 360deg; } }
+@media (prefers-reduced-motion: reduce) { .v2 .playing .ph-art .p-ring::after { animation: none; } }
+
 :root { --panel-w: clamp(340px, 26vw, 420px); --panel-gap: 28px; --strip-w: 92px; }
 
 @media (min-width: 981px) {
@@ -43,8 +47,16 @@
   /* portada grande cuadrada, con el anillo y las notas */
   .v2 .ph-art { position: relative; margin: 0 0 16px; }
   .v2 .ph-art .p-cover { width: min(100%, 36vh); margin: 0 auto; height: auto; aspect-ratio: 1; border-radius: 26px; box-shadow: 0 20px 50px rgba(0, 0, 0, .45); }
-  .v2 .ph-art .p-ring { inset: -1px; border-radius: 26px; border: 1px solid rgba(255, 255, 255, .25); }
-  .v2 .playing .ph-art .p-ring { animation: none; border-color: rgba(255, 255, 255, .5); }
+  /* borde de la portada: sonando .5; en pausa se queda, pero tenue (30 % de eso) */
+  .v2 .ph-art .p-ring { inset: -1px; border-radius: 26px; border: 1px solid rgba(255, 255, 255, .15); opacity: 1; }
+  .v2 .playing .ph-art .p-ring { animation: none; border-color: rgba(255, 255, 255, .22); }
+  /* sonando: una luz en degradado recorre el borde de la portada, como el anillo de móvil pero siguiendo el cuadrado */
+  .v2 .ph-art .p-ring::after { content: ''; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px; opacity: 0; transition: opacity .8s;
+    background: conic-gradient(from var(--ring-a), rgba(220, 230, 245, 0) 0deg 200deg, rgba(220, 230, 245, .4) 300deg, #fff 356deg, rgba(220, 230, 245, 0) 360deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }
+  .v2 .playing .ph-art .p-ring::after { opacity: 1; animation: ring-turn 9s linear infinite; }
+  .v2.ph-min .ph-art .p-ring::after { display: none; }
 
   .v2 .p-info { flex: none; }
   .v2 .p-top { gap: 10px; }
@@ -87,8 +99,14 @@
   /* plegado: franja estrecha a la derecha (portada · anterior · play · siguiente); clic en ella o en la pestaña la abre */
   .v2.ph-min .player.phone { width: var(--strip-w); padding: 26px 0; align-items: center; cursor: pointer; }
   .v2.ph-min .ph-art { margin: 0 0 18px; }
-  .v2.ph-min .ph-art .p-cover { width: 60px; border-radius: 16px; box-shadow: none; }
-  .v2.ph-min .ph-art .p-ring { border-radius: 16px; }
+  /* portada redonda como en móvil, con el mismo anillo en degradado girando mientras suena */
+  .v2.ph-min .ph-art .p-cover { width: 56px; border-radius: 50%; box-shadow: none; }
+  .v2.ph-min .ph-art .p-ring { inset: -5px; border-radius: 50%; border: none;
+    background: conic-gradient(rgba(220, 230, 245, 0) 0deg 140deg, rgba(220, 230, 245, .35) 270deg, rgba(255, 255, 255, .95) 356deg, rgba(220, 230, 245, 0) 360deg);
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 1.6px), #000 calc(100% - 1.2px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 1.6px), #000 calc(100% - 1.2px)); }
+  .v2.ph-min .ph-art .p-ring { opacity: 0; }
+  .v2.ph-min .playing .ph-art .p-ring { opacity: 1; animation: spin 9s linear infinite; }
   .v2.ph-min .p-info, .v2.ph-min .p-vol, .v2.ph-min .p-cta, .v2.ph-min .ph-album, .v2.ph-min .ph-list { display: none; }
   .v2.ph-min .p-ctrl { flex-direction: column; margin: 0; gap: 14px; }
   .v2.ph-min .p-ctrl .p-play { width: 50px; height: 50px; }
@@ -98,6 +116,11 @@
 
 /* móvil: se queda la cápsula de siempre; lo del «teléfono» no aplica */
 @media (max-width: 980px) {
+  /* anillo de la portada: arco en degradado que se desvanece como una estela (antes, borde seco a medias) */
+  .v2 .p-ring { border: none; background: conic-gradient(rgba(220, 230, 245, 0) 0deg 140deg, rgba(220, 230, 245, .35) 270deg, rgba(255, 255, 255, .95) 356deg, rgba(220, 230, 245, 0) 360deg);
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 1.6px), #000 calc(100% - 1.2px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 1.6px), #000 calc(100% - 1.2px)); }
+  .v2 .playing .p-ring { animation-duration: 9s; }
   .v2 .ph-toggle, .v2 .ph-album, .v2 .ph-list, .v2 .ph-phrase { display: none; }
   .v2 .ph-art { flex: none; }
 }
