@@ -48,7 +48,7 @@ TRACKS.forEach((tr) => {
     <p class="phrase fx" data-split="words" data-delay="0.45">${tr.p}</p>
     <div class="meta fx" data-delay="0.8">${fmt(tr.d)} · голос и музыка</div>
     ${tr.free
-      ? `<button class="play fx" data-delay="1.0" data-n="${tr.n}">${icoPlay}${eqHTML()}<span class="lbl">слушать бесплатно</span></button>`
+      ? `<button class="play fx" data-delay="1.0" data-n="${tr.n}">${icoPlay}${eqHTML()}<span class="lbl">слушать</span></button>`
       : `<span class="play locked fx" data-delay="1.0" aria-disabled="true">скоро — в полном альбоме</span>`}`; // aún no publicado: sin clic
   $('tracks').appendChild(s);
 });
@@ -81,7 +81,7 @@ function dockFrame() {
   if (dock.y !== null && closest) {
     if (dock.shown !== closest) {
       dock.shown = closest;
-      tip.innerHTML = `${closest.tr.t}${closest.tr.free ? '<em>бесплатно</em>' : ''}`;
+      tip.innerHTML = `${closest.tr.t}${closest.tr.free ? '<em>доступно</em>' : ''}`;
     }
     tip.style.left = closest.right + 14 + 'px'; // justo al lado del número
     tip.style.top = closest.cy + 'px';
@@ -95,7 +95,7 @@ function dockFrame() {
 /* ---------- móvil: lista de meditaciones a pantalla completa ---------- */
 const mMenu = $('mMenu');
 mMenu.innerHTML = TRACKS.map((tr, i) => `<a href="#t${tr.n}" data-sec="t${tr.n}" style="transition-delay:${(0.04 * i).toFixed(2)}s">
-  <span class="mn">${tr.n}</span><span class="mt">${tr.t}</span>${tr.free ? '<span class="mf">бесплатно</span>' : ''}</a>`).join('');
+  <span class="mn">${tr.n}</span><span class="mt">${tr.t}</span>${tr.free ? '<span class="mf">доступно</span>' : ''}</a>`).join('');
 const setMenu = (open) => { document.body.classList.toggle('m-open', open); $('mBtn').setAttribute('aria-expanded', open); };
 $('mBtn').addEventListener('click', () => setMenu(!document.body.classList.contains('m-open')));
 mMenu.addEventListener('click', (e) => {
@@ -303,7 +303,7 @@ Promise.all([getScene('song1'), document.fonts.ready]).then(([s]) => { A = s; me
 const audio = new Audio();
 audio.preload = 'none';
 const player = $('player'), pPlay = $('pPlay'), pBar = $('pBar'), pFill = $('pFill'), pKnob = $('pKnob'), pTip = $('pTip');
-let idx = -1, userVol = 1, fadeRAF = 0, pendingSeek = 0, lastSave = 0, dragging = false;
+let idx = -1, userVol = 0.7, fadeRAF = 0, pendingSeek = 0, lastSave = 0, dragging = false;
 
 const store = {
   get: (n) => { try { return parseFloat(localStorage.getItem('tv-pos-' + n)) || 0; } catch { return 0; } },
@@ -344,6 +344,7 @@ function setTrack(i) {
 }
 function play() {
   player.classList.add('show'); // si se cerró con ×, vuelve
+  player.classList.remove('end');
   try { audio.volume = 0; } catch { /* iOS */ }
   const p = audio.play();
   if (p) p.catch(() => setError());
@@ -356,7 +357,8 @@ function playIndex(i) {
   setTrack(i);
   play();
 }
-function next() { if (idx < FREE.length - 1) playIndex(idx + 1); else showEnd(); }
+// el botón «siguiente» nunca pausa: tras la última gratis vuelve a la primera; solo al terminar sola invita al álbum
+function next(auto) { if (idx < FREE.length - 1) playIndex(idx + 1); else if (auto === true) showEnd(); else playIndex(0); }
 function prev() { if (audio.currentTime > 5 || idx <= 0) { audio.currentTime = 0; return; } playIndex(idx - 1); }
 function showEnd() { pause(); player.classList.add('end'); }
 function setError() { player.classList.add('error'); player.classList.remove('loading'); $('pState').textContent = 'ошибка загрузки'; }
@@ -372,11 +374,11 @@ function sync() {
   const n = idx >= 0 ? FREE[idx].n : null;
   player.classList.toggle('playing', on);
   pPlay.setAttribute('aria-label', on ? 'Пауза' : 'Играть');
-  if (!player.classList.contains('error')) $('pState').textContent = on ? 'играет' : 'пауза';
+  if (!player.classList.contains('error')) $('pState').textContent = ''; // el icono ya dice el estado; «пауза» junto al play confundía
   document.querySelectorAll('.track .play[data-n]').forEach((b) => {
     const mine = b.dataset.n === n;
     b.classList.toggle('on', mine && on);
-    b.querySelector('.lbl').textContent = mine ? (on ? 'играет' : 'продолжить') : 'слушать бесплатно';
+    b.querySelector('.lbl').textContent = mine ? (on ? 'играет' : 'продолжить') : 'слушать';
   });
   dock.items.forEach((it) => it.a.classList.toggle('now', on && it.tr.n === n));
   if ('mediaSession' in navigator) navigator.mediaSession.playbackState = on ? 'playing' : 'paused';
@@ -384,8 +386,8 @@ function sync() {
 
 audio.addEventListener('play', sync);
 audio.addEventListener('pause', sync);
-audio.addEventListener('waiting', () => player.classList.add('loading'));
-audio.addEventListener('playing', () => player.classList.remove('loading'));
+audio.addEventListener('waiting', () => { player.classList.add('loading'); $('pState').textContent = 'загрузка'; });
+audio.addEventListener('playing', () => { player.classList.remove('loading'); if (!player.classList.contains('error')) $('pState').textContent = ''; });
 audio.addEventListener('loadedmetadata', () => { if (pendingSeek) { audio.currentTime = pendingSeek; pendingSeek = 0; } });
 audio.addEventListener('timeupdate', () => {
   if (idx < 0 || dragging) return;
@@ -394,11 +396,11 @@ audio.addEventListener('timeupdate', () => {
   $('pCur').textContent = fmt(audio.currentTime);
   if (audio.currentTime - lastSave > 5 || audio.currentTime < lastSave) { lastSave = audio.currentTime; store.set(FREE[idx].n, audio.currentTime); }
 });
-audio.addEventListener('ended', () => { store.set(FREE[idx].n, 0); next(); });
+audio.addEventListener('ended', () => { store.set(FREE[idx].n, 0); next(true); });
 audio.addEventListener('error', setError);
 
 pPlay.addEventListener('click', toggle);
-$('pNext').addEventListener('click', next);
+$('pNext').addEventListener('click', () => next());
 $('pPrev').addEventListener('click', prev);
 $('pVol').addEventListener('input', (e) => { userVol = parseFloat(e.target.value); try { audio.volume = userVol; } catch { /* iOS */ } });
 $('pClose').addEventListener('click', () => { pause(); player.classList.remove('show'); });
@@ -450,7 +452,7 @@ if ('mediaSession' in navigator) {
   ms.setActionHandler('play', play);
   ms.setActionHandler('pause', pause);
   ms.setActionHandler('previoustrack', prev);
-  ms.setActionHandler('nexttrack', next);
+  ms.setActionHandler('nexttrack', () => next());
   ms.setActionHandler('seekbackward', () => { audio.currentTime -= 10; });
   ms.setActionHandler('seekforward', () => { audio.currentTime += 10; });
   try { ms.setActionHandler('seekto', (d) => { audio.currentTime = d.seekTime; }); } catch { /* no soportado */ }

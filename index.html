@@ -9,8 +9,9 @@
 <link rel="preload" href="assets/fonts/CormorantGaramond-Upright-Variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/song1.webp" as="image">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="v2.css">
 </head>
-<body>
+<body class="v2">
 <!-- Paisaje vivo fijo detrás de todo: parallax 2.5D con mapa de profundidad + agua (mismo shader que los videos) -->
 <canvas id="scene"></canvas>
 <div class="veil"></div>
@@ -67,33 +68,41 @@
 <!-- Firma fija en la esquina inferior derecha -->
 <a class="made" href="https://espinoza.ru" target="_blank" rel="noopener">Проект от <span>espinoza.ru</span></a>
 
-<!-- Reproductor flotante: aparece al dar play y se queda fijo mientras navegas -->
-<div class="player" id="player" role="region" aria-label="Плеер">
-  <div class="p-cover" id="pCover"><span class="p-ring"></span></div>
+<!-- v2 · Player a la derecha como un teléfono (estilo Yandex Музыка, mejorado). Mismos id que usa app.js. -->
+<aside class="player phone" id="player" role="region" aria-label="Плеер">
+  <!-- plegar / desplegar: abierto es el «teléfono» con la lista; plegado, una cápsula abajo a la derecha -->
+  <button class="ph-toggle" id="phToggle" aria-label="Свернуть плеер" aria-expanded="true"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+  <div class="ph-art">
+    <div class="p-cover" id="pCover"><span class="p-ring"></span></div>
+  </div>
   <div class="p-info">
     <div class="p-top">
       <span class="p-num" id="pNum">01</span>
       <span class="p-title" id="pTitle"></span>
       <span class="eq"><i></i><i></i><i></i><i></i><i></i></span>
     </div>
+    <p class="ph-phrase" id="pPhrase"></p>
     <div class="p-bar" id="pBar" role="slider" tabindex="0" aria-label="Перемотка" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
       <span class="p-fill" id="pFill"></span><span class="p-knob" id="pKnob"></span><span class="p-tip" id="pTip">0:00</span>
     </div>
-    <div class="p-time"><span id="pCur">0:00</span><span class="p-state" id="pState">пауза</span><span id="pDur">0:00</span></div>
+    <div class="p-time"><span id="pCur">0:00</span><span class="p-state" id="pState"></span><span id="pDur">0:00</span></div>
   </div>
   <div class="p-ctrl">
     <button id="pPrev" aria-label="Предыдущая"><svg viewBox="0 0 24 24"><path d="M7 5v14M18 6l-8 6 8 6z"/></svg></button>
     <button id="pPlay" class="p-play" aria-label="Играть">
       <svg class="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg>
-      <svg class="i-pause" viewBox="0 0 24 24"><path d="M8 5h3v14H8zM13 5h3v14h-3z"/></svg>
+      <svg class="i-pause" viewBox="0 0 24 24"><path d="M6.5 5h3.5v14H6.5zM14 5h3.5v14H14z"/></svg>
     </button>
     <button id="pNext" aria-label="Следующая"><svg viewBox="0 0 24 24"><path d="M17 5v14M6 6l8 6-8 6z"/></svg></button>
-    <input class="p-vol" id="pVol" type="range" min="0" max="1" step="0.01" value="1" aria-label="Громкость">
   </div>
+  <input class="p-vol" id="pVol" type="range" min="0" max="1" step="0.01" value="0.7" aria-label="Громкость">
   <a class="p-cta" href="#listen">Полный альбом →</a>
-  <button class="p-close" id="pClose" aria-label="Закрыть плеер">×</button>
-</div>
+  <button class="p-close" id="pClose" aria-label="Закрыть плеер" hidden>×</button>
+  <p class="ph-album">Тишина внутри <span>3 из 11 доступно</span></p>
+  <ol class="ph-list" id="pList"></ol>
+</aside>
 
 <script src="app.js"></script>
+<script src="v2.js"></script>
 </body>
 </html>
