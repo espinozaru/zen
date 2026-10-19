@@ -167,10 +167,6 @@ body:has(.player.show) .m-btn { bottom: calc(112px + env(safe-area-inset-bottom)
 .p-cover { position: relative; width: 52px; height: 52px; border-radius: 50%; background-size: cover; background-position: center; flex: none; }
 .p-ring { position: absolute; inset: -5px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .45); border-right-color: transparent; border-bottom-color: transparent; opacity: 0; transition: opacity .8s; }
 .playing .p-ring { opacity: 1; animation: spin 7s linear infinite; }
-/* barras «suena» dentro del círculo de la portada, sobre un velo oscuro */
-.p-cover::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: rgba(5, 8, 15, .45); opacity: 0; transition: opacity .6s; }
-.p-eq { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1; opacity: 0; transition: opacity .6s; }
-.playing .p-cover::after, .playing .p-eq { opacity: 1; }
 .loading .p-ring { opacity: 1; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
