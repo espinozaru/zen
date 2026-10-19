@@ -49,7 +49,7 @@ TRACKS.forEach((tr) => {
     <div class="meta fx" data-delay="0.8">${fmt(tr.d)} · голос и музыка</div>
     ${tr.free
       ? `<button class="play fx" data-delay="1.0" data-n="${tr.n}">${icoPlay}${eqHTML()}<span class="lbl">слушать бесплатно</span></button>`
-      : `<a class="play locked fx" data-delay="1.0" href="#listen">в полном альбоме</a>`}`;
+      : `<span class="play locked fx" data-delay="1.0" aria-disabled="true">скоро — в полном альбоме</span>`}`; // aún no publicado: sin clic
   $('tracks').appendChild(s);
 });
 
